@@ -33,12 +33,47 @@
 </body>
 </html>
 
+
 <?php
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 $name = htmlspecialchars($_POST['name']);
 $email = htmlspecialchars($_POST['email']);
 $date = htmlspecialchars($_POST['date']);
 $phone = htmlspecialchars($_POST['phone']);
+
+//db connection
+$db_server = "localhost";
+$db_user = "root";
+$db_pass = "";
+$db_name = "cruddb";
+$conn = "";
+
+$conn = mysqli_connect($db_server, $db_user, $db_pass, $db_name);
+
+if(!$conn){
+echo"Could not connect!";
+    exit;
+}
+
+if ($conn) {
+    $stmt = $conn->prepare("INSERT INTO registration (name, email, date, phone) VALUES (?, ?, ?, ?)");
+    if ($stmt === false) {
+        die("Prepare failed: " . $conn->error);
+    }
+
+    $stmt->bind_param("sssi", $name, $email, $date, $phone);
+
+    if ($stmt->execute()) {
+        echo "Registration successful...";
+    } else {
+        echo "Error executing statement: " . $stmt->error;
+    }
+
+    $stmt->close();
+    $conn->close();
+} else {
+    echo "Database connection failed.";
+}
 
 echo "<h2>Form Submission Results:</h2>";
 echo "Name: " . $name . "<br>";
@@ -49,23 +84,8 @@ echo "Phone Number: " . $phone . "<br>";
 }
 ?>
 
-<?php
-$name = $_POST['name'];
-$email = $_POST['email'];
-$date = $_POST['date'];
-$phone = $_POST['phone'];
 
-$conn = new mysqli('localhost','root','','test');
-if($conn->connect_error){
-    die('Connection Failed : '.$conn->connect_error);
-}else{
-    $stmt = $conn->prepare("insert into registration(name, email, date, phone)
-    values(?, ?, ?, ?)");
-    $stmt->bind_param("sssi",$name, $email, $date, $date);
-    $stmt->execute();
-    echo "registration successfully...";
-    $stmt->close();
-    $conn->close();
-}
-?>
+
+
+
 
