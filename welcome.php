@@ -4,8 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simple Form</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
 </head>
-<body>
+<body style="margin: 50px;">
+
+
+
     <h2>Contact Form</h2>
 
     <form action="#" method="post">
@@ -29,6 +35,7 @@
            <input type="submit" value="Submit">
     </form>
 
+    
 
 </body>
 </html>
@@ -61,11 +68,11 @@ if ($conn) {
         die("Prepare failed: " . $conn->error);
     }
 
-    $stmt->bind_param("sssi", $name, $email, $date, $phone);
+  $stmt->bind_param("sssi", $name, $email, $date, $phone);
 
-    if ($stmt->execute()) {
+if ($stmt->execute()) {
         echo "Registration successful...";
-    } else {
+   } else {
         echo "Error executing statement: " . $stmt->error;
     }
 
@@ -73,7 +80,18 @@ if ($conn) {
     $conn->close();
 } else {
     echo "Database connection failed.";
-}
+ }
+
+ $conn = mysqli_connect($db_server, $db_user, $db_pass, $db_name);
+
+ //read all row drom db
+ $sql = "SELECT * FROM registration";
+ $result = $conn->query($sql);
+
+ if (!$result) {
+    die("invalid query: " . $conn->error);
+ }
+
 
 echo "<h2>Form Submission Results:</h2>";
 echo "Name: " . $name . "<br>";
@@ -84,7 +102,44 @@ echo "Phone Number: " . $phone . "<br>";
 }
 ?>
 
+<h1>Registration List<h1>
+ <br>
+ <table class="table">
+     <thead>
+         <tr>
+             <th>ID</th>
+             <th>Name</th>
+             <th>Email</th>
+             <th>Date</th>
+             <th>Phone Number</th>
+             <th>Action</th>
+         </tr>
+     </thead>
 
+     <tbody>
+
+     <?php
+// read data of each row
+   
+ while($row = $result->fetch_assoc()) {
+   // print_r($row); 
+    //exit;
+    echo "<tr>
+    <td>" . $row["ID"] . "</td>
+    <td>" . $row["Name"] . "</td>
+    <td>" . $row["Email"] . "</td>
+    <td>" . $row["Date"] . "</td>
+    <td>" . $row["Phone"] . "</td>
+    <td>
+        <a class='btn btn-primary btn-sm' href='update'>Update</a>
+        <a class='btn btn-danger btn-sm' href='delete'>Delete</a>
+    </td>
+</tr>";
+ }
+?>
+     </tbody>
+         
+ </table>
 
 
 
